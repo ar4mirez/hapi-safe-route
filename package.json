@@ -1,0 +1,52 @@
+{
+  "name": "hapi-safe-route",
+  "description": "Register routes in a safer way avoiding server crash while running or at startup time.",
+  "version": "1.0.0",
+  "author": [
+    "Angel Ramirez <angel@cuemby.com>",
+    "Vladimir de Turckheim <>"
+  ],
+  "bugs": {
+    "url": "https://github.com/ar4mirez/hapi-safe-route/issues"
+  },
+  "contributors": [
+    {
+      "name": "Angel Ramirez",
+      "email": "angel@cuemby.com",
+      "url": "https://www.linkedin.com/in/cuemby"
+    },
+    {
+      "name": "Vladimir de Turckheim",
+      "email": "",
+      "url": "https://medium.com/@vdeturckheim"
+    }
+  ],
+  "dependencies": {
+    "blipp": "^2.3.0",
+    "cast-array": "^1.0.1",
+    "hoek": "^3.0.4",
+    "joi": "^8.0.5",
+    "lodash": "^4.6.1"
+  },
+  "devDependencies": {
+    "code": "^2.1.1",
+    "fixpack": "^2.3.0",
+    "hapi": "^13.2.1",
+    "lab": "^10.3.0"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "homepage": "https://github.com/ar4mirez/hapi-safe-route",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ar4mirez/hapi-safe-route.git"
+  },
+  "scripts": {
+    "fix": "node_modules/.bin/fixpack",
+    "test": "lab -c -L",
+    "test-cover": "lab -c -r html -o ./test/artifacts/coverage.html && open ./test/artifacts/coverage.html"
+  }
+}
