@@ -1,7 +1,7 @@
 {
   "name": "hapi-safe-route",
   "description": "Register routes in a safer way avoiding server crash while running or at startup time.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": [
     "Angel Ramirez <angel@cuemby.com>",
     "Vladimir de Turckheim <>"
