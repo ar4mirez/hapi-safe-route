@@ -25,5 +25,14 @@
   },
   "scripts": {
     "test": "lab -v -c"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ar4mirez/hapi-safe-route.git"
+  },
+  "files": [
+    "lib/",
+    "package.json",
+    "README.md"
+  ]
 }
