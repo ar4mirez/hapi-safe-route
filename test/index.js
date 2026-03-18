@@ -1,104 +1,79 @@
 'use strict';
 
-const Lab = require('lab');
-const Code = require('code');
-const Hapi = require('hapi');
+const Lab = require('@hapi/lab');
+const Code = require('@hapi/code');
+const Hapi = require('@hapi/hapi');
 const Plugin = require('../lib');
 
+const { describe, it, beforeEach } = exports.lab = Lab.script();
+const { expect } = Code;
 
-const lab = exports.lab = Lab.script();
+describe('Plugin Registration', () => {
 
-
-lab.experiment('Plugin Registration', () => {
-
-    lab.test('it registers successfully', (done) => {
+    it('it registers successfully', async () => {
 
         const server = new Hapi.Server();
-        server.register(Plugin, (err) => {
-
-            Code.expect(err).to.not.exist();
-            done();
-        });
+        await server.register(Plugin);
     });
 });
 
-lab.experiment('functionality:', () => {
+describe('functionality:', () => {
 
     let server;
 
-    lab.beforeEach((done) => {
+    beforeEach(async () => {
 
         server = new Hapi.Server();
-        server.connection();
-        server.register(Plugin, done);
+        await server.register(Plugin);
+        await server.initialize();
     });
 
-    lab.beforeEach((done) => {
+    it('it exposes safeRoute function', () => {
 
-        server.initialize(done);
+        expect(server.plugins['hapi-safe-route']).to.exist();
+        expect(server.plugins['hapi-safe-route'].safeRoute).to.be.a.function();
     });
 
-    lab.test('it exposes safeRoute function.', (done) => {
+    it('it fails if no route is passed', async () => {
 
-        Code.expect(server.plugins['hapi-safe-route']).to.exist();
-        Code.expect(server.plugins['hapi-safe-route'].safeRoute).to.be.a.function();
-        return done();
+        const { safeRoute } = server.plugins['hapi-safe-route'];
+        let err;
+
+        try {
+            await safeRoute(null);
+        }
+        catch (e) {
+            err = e;
+        }
+
+        expect(err).to.exist();
     });
 
-    lab.test('it fail if not route were passed.', (done) => {
+    it('it registers a valid route', async () => {
 
-        const safeRoute = server.plugins['hapi-safe-route'].safeRoute;
-        Code.expect(() => {
+        const { safeRoute } = server.plugins['hapi-safe-route'];
+        const routes = await safeRoute(require('./routes'));
 
-            safeRoute(() => {});
-        }).to.throw();
-
-        return done();
+        expect(routes).to.have.length(2);
+        const table = server.table();
+        expect(table).to.have.length(2);
     });
 
-    lab.test('it register a valid route.', (done) => {
+    it('making sure routes can be reached', async () => {
 
-        const safeRoute = server.plugins['hapi-safe-route'].safeRoute;
-        safeRoute(require('./routes'), (err) => {
+        const { safeRoute } = server.plugins['hapi-safe-route'];
+        await safeRoute(require('./routes'));
 
-            Code.expect(err).to.not.exist();
-            Code.expect(err).to.be.null();
-            const routes = server.connections[0].table();
-            Code.expect(routes).to.have.length(2);
-            return done();
-        });
+        const res = await server.inject({ method: 'GET', url: '/b' });
+        expect(res.statusCode).to.equal(200);
     });
 
-    lab.test('making sure routes can be reached. :D ', (done) => {
+    it('silently skips duplicate routes instead of crashing', async () => {
 
-        const safeRoute = server.plugins['hapi-safe-route'].safeRoute;
-        safeRoute(require('./routes'), (err) => {
+        const { safeRoute } = server.plugins['hapi-safe-route'];
+        await safeRoute(require('./routes'));
 
-            Code.expect(err).to.be.null();
-
-            server.inject({
-                method: 'GET',
-                url: '/b'
-            }, (res) => {
-
-                Code.expect(res.statusCode).to.be.equal(200);
-                return done();
-            });
-        });
-    });
-
-    lab.test('fail trying to register the same route.', (done) => {
-
-        const safeRoute = server.plugins['hapi-safe-route'].safeRoute;
-        safeRoute(require('./routes'), (err) => {
-
-            Code.expect(err).to.be.null();
-
-            safeRoute(require('./routes'), (err) => {
-
-                Code.expect(err).to.be.an.instanceof(Error);
-                return done();
-            });
-        });
+        const newRoutes = await safeRoute(require('./routes'));
+        expect(newRoutes).to.have.length(0);
     });
 });

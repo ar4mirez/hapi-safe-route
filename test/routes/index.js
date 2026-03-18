@@ -3,15 +3,15 @@
 module.exports = [{
     method: 'GET',
     path: '/a',
-    handler: (request, reply) => {
+    handler: (request, h) => {
 
-        return reply({ route: 'a' });
+        return h.response({ route: 'a' });
     }
 }, {
     method: 'GET',
     path: '/b',
-    handler: (request, reply) => {
+    handler: (request, h) => {
 
-        return reply({ route: 'a' });
+        return h.response({ route: 'b' });
     }
 }];
